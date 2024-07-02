@@ -1,0 +1,45 @@
+-- DDL external_source.craft_customers
+
+DROP TABLE external_source.customers;
+
+CREATE TABLE external_source.customers (
+	customer_id int8 GENERATED ALWAYS AS IDENTITY NOT NULL,
+	customer_name varchar NULL,
+	customer_address varchar NULL,
+	customer_birthday date NULL,
+	customer_email varchar NOT NULL,
+	CONSTRAINT external_customers_pk PRIMARY KEY (customer_id)
+);
+
+
+-- DDL external_source.craft_products_orders
+
+DROP TABLE external_source.craft_products_orders;
+
+CREATE TABLE external_source.craft_products_orders (
+	id int8 GENERATED ALWAYS AS IDENTITY NOT NULL,
+	craftsman_id int8 GENERATED ALWAYS AS IDENTITY NOT NULL,
+	product_id int8 GENERATED ALWAYS AS IDENTITY NOT NULL,
+	order_id int8 GENERATED ALWAYS AS IDENTITY NOT NULL,
+
+	craftsman_name varchar NOT NULL,
+	craftsman_address varchar NOT NULL,
+	craftsman_birthday date NOT NULL,
+	craftsman_email varchar NOT NULL,
+	
+	product_name varchar NOT NULL,
+	product_description varchar NOT NULL,
+	product_type varchar NOT NULL,
+	product_price int8 NOT NULL,
+	
+	order_created_date date NULL,
+	order_completion_date date NULL,
+	order_status varchar NOT NULL,
+	customer_id int8 NOT NULL,
+
+	CONSTRAINT external_craft_products_orders_pk PRIMARY KEY (id),
+	
+	CONSTRAINT external_craft_products_orders_fk FOREIGN KEY (customer_id) 
+	REFERENCES external_source.customers(customer_id) 
+	ON DELETE RESTRICT
+);

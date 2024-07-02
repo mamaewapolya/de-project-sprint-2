@@ -1,0 +1,105 @@
+-- DDL витрины данных dwh.craftsman_report_datamart
+DROP TABLE IF EXISTS dwh.craftsman_report_datamart;
+
+CREATE TABLE IF NOT EXISTS dwh.craftsman_report_datamart (
+    id BIGINT GENERATED ALWAYS AS IDENTITY NOT NULL, 
+    craftsman_id BIGINT NOT NULL, 
+    craftsman_name VARCHAR NOT NULL,
+    craftsman_address VARCHAR NOT NULL,
+    craftsman_birthday DATE NOT NULL, 
+    craftsman_email VARCHAR NOT NULL, 
+    craftsman_money NUMERIC(15,2) NOT NULL, 
+    platform_money BIGINT NOT NULL, 
+    count_order BIGINT NOT NULL, 
+    avg_price_order NUMERIC(10,2) NOT NULL, 
+    avg_age_customer NUMERIC(3,1) NOT NULL,
+    median_time_order_completed NUMERIC(10,1),
+    top_product_category VARCHAR NOT NULL,
+    count_order_created BIGINT NOT NULL,
+    count_order_in_progress BIGINT NOT NULL,
+    count_order_delivery BIGINT NOT NULL, 
+    count_order_done BIGINT NOT NULL,
+    count_order_not_done BIGINT NOT NULL,
+    report_period VARCHAR NOT NULL,
+    CONSTRAINT craftsman_report_datamart_pk PRIMARY KEY (id)
+);
+
+-- DDL таблицы инкрементальных загрузок в витрину
+DROP TABLE IF EXISTS dwh.load_dates_craftsman_report_datamart;
+
+CREATE TABLE IF NOT EXISTS dwh.load_dates_craftsman_report_datamart (
+    id BIGINT GENERATED ALWAYS AS IDENTITY NOT NULL,
+    load_dttm DATE NOT NULL,
+    CONSTRAINT load_dates_craftsman_report_datamart_pk PRIMARY KEY (id)
+);
+
+
+-- dwh.d_craftsman definition
+DROP TABLE dwh.d_craftsman;
+
+CREATE TABLE dwh.d_craftsman (
+	craftsman_id int8 GENERATED ALWAYS AS IDENTITY NOT NULL,
+	craftsman_name varchar NOT NULL,
+	craftsman_address varchar NOT NULL,
+	craftsman_birthday date NOT NULL,
+	craftsman_email varchar NOT NULL,
+	load_dttm timestamp NOT NULL,
+	CONSTRAINT craftsman_pk PRIMARY KEY (craftsman_id)
+);
+
+
+-- dwh.d_customer definition
+DROP TABLE dwh.d_customer;
+
+CREATE TABLE dwh.d_customer (
+	customer_id int8 GENERATED ALWAYS AS IDENTITY NOT NULL,
+	customer_name varchar NULL,
+	customer_address varchar NULL,
+	customer_birthday date NULL,
+	customer_email varchar NOT NULL,
+	load_dttm timestamp NOT NULL,
+	CONSTRAINT customers_pk PRIMARY KEY (customer_id)
+);
+
+
+-- dwh.d_product definition
+DROP TABLE dwh.d_product;
+
+CREATE TABLE dwh.d_product (
+	product_id int8 GENERATED ALWAYS AS IDENTITY NOT NULL,
+	product_name varchar NOT NULL,
+	product_description varchar NOT NULL,
+	product_type varchar NOT NULL,
+	product_price int8 NOT NULL,
+	load_dttm timestamp NOT NULL,
+	CONSTRAINT products_pk PRIMARY KEY (product_id)
+);
+
+
+-- dwh.f_order definition
+DROP TABLE dwh.f_order;
+
+CREATE TABLE dwh.f_order (
+	order_id int8 GENERATED ALWAYS AS IDENTITY NOT NULL,
+	product_id int8 NOT NULL,
+	craftsman_id int8 NOT NULL,
+	customer_id int8 NOT NULL,
+	order_created_date date NULL,
+	order_completion_date date NULL,
+	order_status varchar NOT NULL,
+	load_dttm timestamp NOT NULL,
+
+	CONSTRAINT orders_pk PRIMARY KEY (order_id),
+
+	CONSTRAINT orders_craftsman_fk FOREIGN KEY (craftsman_id) 
+	REFERENCES dwh.d_craftsman(craftsman_id) 
+	ON DELETE RESTRICT,
+
+	CONSTRAINT orders_customer_fk FOREIGN KEY (customer_id) 
+	REFERENCES dwh.d_customer(customer_id) 
+	ON DELETE RESTRICT,
+	
+	CONSTRAINT orders_product_fk FOREIGN KEY (product_id) 
+	REFERENCES dwh.d_product(product_id) 
+	ON DELETE RESTRICT
+);

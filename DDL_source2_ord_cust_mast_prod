@@ -1,0 +1,47 @@
+-- DDL source2.craft_market_orders_customers
+
+DROP TABLE source2.craft_market_masters_products;
+
+CREATE TABLE source2.craft_market_masters_products (
+	craftsman_id int8 GENERATED ALWAYS AS IDENTITY NOT NULL,
+	product_id int8 GENERATED ALWAYS AS IDENTITY NOT NULL,
+
+	craftsman_name varchar NOT NULL,
+	craftsman_address varchar NOT NULL,
+	craftsman_birthday date NOT NULL,
+	craftsman_email varchar NOT NULL,
+	
+	product_name varchar NOT NULL,
+	product_description varchar NOT NULL,
+	product_type varchar NOT NULL,
+	product_price int8 NOT NULL,
+	
+	CONSTRAINT craft_market_masters_products_pk PRIMARY KEY (craftsman_id)
+);
+
+
+-- DDL source2.craft_market_orders_customers
+
+DROP TABLE source2.craft_market_orders_customers;
+
+CREATE TABLE source2.craft_market_orders_customers (
+	order_id int8 GENERATED ALWAYS AS IDENTITY NOT NULL,
+	customer_id int8 GENERATED ALWAYS AS IDENTITY NOT NULL,
+	craftsman_id int8 NOT NULL,
+	product_id int8 NOT NULL,
+
+	order_created_date date NULL,
+	order_completion_date date NULL,
+	order_status varchar NOT NULL,
+	
+	customer_name varchar NULL,
+	customer_address varchar NOT NULL,
+	customer_birthday date NULL,
+	customer_email varchar NOT NULL,
+
+	CONSTRAINT craft_market_orders_customers_pk PRIMARY KEY (order_id),
+
+	CONSTRAINT craft_market_orders_customers_fk FOREIGN KEY (craftsman_id) 
+	REFERENCES source2.craft_market_masters_products(craftsman_id) 
+	ON DELETE RESTRICT
+);
